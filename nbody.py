@@ -28,6 +28,17 @@ class particle:
         
         self.artist = None
         self.particleLike = pl
+        
+        self.loggables = {
+            "id": 1,
+            "mass": 2,
+            "position": 1,
+            "velocity": 1,
+            "acceleration": 1,
+            "color": 4,
+            "artist": 3,
+            "particleLike": 3,
+            }
         return
     
     def updateState(self, dt):
@@ -64,9 +75,22 @@ class particle:
         self.updateForce(ptsLike)
         return
     
-    def getPointsLike(self,pts,node,nodeTree,o,z):
+    def getPointsLike(self, pts, node, nodeTree, o, z):
         ptsLike = []
+        # get children of the current node
+        #   if node is in the point's node tree
+        #       if child node is not of the lowest node's order
+        #           add points from this function entering the current child node
+        #       skip current child node
+        #
+        #   if size of node over distance to COM is too big
+        #       add points from func entering current child node
+        #   or
+        #       add particle like of this node
         for n in node.children:
+            if n.membersN==0:
+                continue
+            
             if n in nodeTree:
                 if n.order!=o:
                     ptsLike += self.getPointsLike(pts, n, nodeTree, o, z)
@@ -106,6 +130,19 @@ class node:
         self.mass,self.COM = util.barycenter(self)
         
         self.children = []
+        
+        self.loggables = {
+            "order": 1,
+            "node": 1,
+            "xlim": 2,
+            "ylim": 2,
+            "orderLength": 3,
+            "center": 3,
+            "membersN": 2,
+            "mass": 3,
+            "COM": 2,
+            "children": 2,
+            }
         return
     
     def populate(self, pts):

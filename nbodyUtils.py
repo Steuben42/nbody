@@ -9,6 +9,9 @@ nbodyUtils
 
 import numpy as np
 
+import csv
+import os
+
 ############################### SUPERFICIALS ##################################
 def color(prim=None, primLoc=0.8, primScale=0.1, defLoc=0.5, defScale=0.4):
     """
@@ -76,6 +79,14 @@ def barycenter(node):
         
     return mass,barycenter
 
+def particleEnergy(pt,pts):
+    POT = 0
+    KE = 0
+    for expt in pts:
+        POT += np.linalg.norm(gravitation(pt.mass,expt.mass,pt.position,expt.position))*np.linalg.norm(pt.position - expt.position)
+    
+    KE = (0.5)*pt.mass*np.linalg.norm(pt.velocity)**2
+    return POT + KE
 
 #################################### SORTING ##################################
 def getContained(bounds,pts):
@@ -88,3 +99,28 @@ def getContained(bounds,pts):
             containedPts.append(pt)
             
     return count,containedPts
+
+#################################### LOGGING ##################################
+def log(level,):
+    lvls = ['[!FATAL]','[ERROR]','(WARNING)','{INFO}']
+    return
+
+def initCSV():
+    with open('dataLog.csv', 'w', newline='') as file:
+            w = csv.writer(file)
+            w.writerow([None])
+    return
+
+def CSVentry(frame,obj,detailLevel=1):
+    with open('dataLog.csv', 'a', newline='') as file:
+        
+        w = csv.writer(file)
+        
+        entry = [str(frame),str(type(obj))]
+        
+        for l in obj.loggables:
+            if obj.loggables[l] <= detailLevel:
+                entry.append(l + ': ' + str(getattr(obj,l)))
+                
+        w.writerow(entry)
+    return
